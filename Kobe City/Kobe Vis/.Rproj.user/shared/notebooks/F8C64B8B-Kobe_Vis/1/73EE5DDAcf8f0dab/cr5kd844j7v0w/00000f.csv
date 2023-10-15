@@ -1,4 +1,0 @@
-"0","data_ <- read.csv(""./data/2023-juminkihondaicho.csv"")
-"
-"2","Error in make.names(col.names, unique = TRUE) : invalid multibyte string at '<91>Î<db><94><4e>Œ<8e>'
-"
