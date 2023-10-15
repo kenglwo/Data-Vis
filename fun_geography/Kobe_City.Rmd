@@ -1,0 +1,30 @@
+---
+title: "Kobe_City"
+author: "Kento Shigyo"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+  
+```{r}
+# install.packages("tidyverse")
+library(dplyr)
+# install.packages("kokudosuuchi")
+library(ggplot2)
+library(stringr)
+library(readxl)
+library(kokudosuuchi)
+install.packages("rmapshaper")
+library(rmapshaper)
+```
+
+
+```{r}
+getKSJSummary()
+```
+
+
+    
