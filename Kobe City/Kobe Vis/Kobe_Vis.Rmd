@@ -1,0 +1,130 @@
+---
+title: "Kobe Vis"
+author: "Kento Shigyo"
+date: "2023-10-13"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+# install.packages("tidyverse")
+# install.packages("knitr")
+library(dplyr)
+# install.packages("kokudosuuchi")
+library(ggplot2)
+library(stringr)
+library(readxl)
+library(readr)
+# library(kokudosuuchi)
+# install.packages("rmapshaper")
+# library(rmapshaper)
+```
+
+
+# Import data
+```{r echo=FALSE}
+
+d_daicho <- read_csv("./data/2023-juminkihondaicho.csv")
+# d_daicho %>% 
+  # select('種別') %>% unique() %>%
+  # select('区') %>% unique() 
+  # print()
+
+# <区>
+# 全市				
+# 東灘区				
+# 灘区				
+# 中央区				
+# 兵庫区				
+# 北区				
+# 長田区				
+# 須磨区				
+# 垂水区				
+# 西区
+
+# <種別>
+# 人口(計)				
+# 人口(男)				
+# 人口(女)				
+# 人口_日本人(計)				
+# 人口_日本人(男)				
+# 人口_日本人(女)				
+# 人口_外国人(計)				
+# 人口_外国人(男)				
+# 人口_外国人(女)
+
+```
+
+
+```{r}
+library(scales)
+
+d_daicho_1 <- d_daicho %>% 
+  # filter(区 == '全市') %>%
+  filter(種別 == '人口(計)') %>% 
+  filter(対象年月 == 202301) %>% 
+  filter(支所等 == '本区' | 支所等 == '合計') %>%
+  filter(区 != '北区' & 区 != '須磨区' & 区 != '西区')
+
+
+d_daicho_2 <- d_daicho %>% 
+  # filter(区 == '全市') %>%
+  filter(種別 == '人口(計)') %>% 
+  filter(対象年月 == 202301) %>% 
+  filter(支所等 == '本区' | 支所等 == '合計') %>%
+  filter(区 == '北区' | 区 == '須磨区' | 区 == '西区') %>% 
+  group_by(区) %>% filter(値 == max(値)) 
+
+d_daicho_districts <- union(d_daicho_1, d_daicho_2)
+View(d_daicho_districts)
+
+d_daicho_districts %>%
+  filter(区 != '全市') %>% 
+  # summarise(v = sum(値))
+  ggplot() +
+    geom_bar(aes(x=reorder(区, -値), y=値), stat="identity", fill="steelblue") +
+    geom_text(aes(x=区, y=値, label=scales::comma(値)), vjust=-0.3) +
+    ggtitle("神戸市の区ごとの人口数") +
+    xlab("区") +
+    ylab("人数") +
+   scale_y_continuous(labels=comma) 
+
+ggsave("./figures/population_by_wards.png", width=10, height=6, type="png")
+    
+  
+  # exceptions
+  # 北区, 須磨区, 西区
+```
+
+
+```{r}
+install.packages("sf")
+library(sf)
+# map <- read_sf("./data/Shape Files/chuoh/r2kb28110.shp")
+# map <- read_sf("./data/Shape Files/higashinada/r2kb28101.shp")
+# map <- read_sf("./data/Shape Files/hyogo/N03-21_28_210101.shp")
+
+map <- read_sf("./data/Shape Files/kobe_districts/all_districts/all_districts.shp")
+# map %>% mutate(CITY_NAME = str_sub(CITY_NAME, 4,-1)) %>% left_join()
+
+
+View(map)
+
+install.packages("RColorBrewer")
+library(RColorBrewer)
+# display.brewer.all()
+
+ggplot(map) + geom_sf()
+
+ggplot(map) + geom_sf(aes(fill=JINKO)) +
+  scale_fill_gradientn(colors=brewer.pal(11,"GnBu"))+
+  theme_gray (base_family = "HiraKakuPro-W3")+
+  labs(fill = "単位：人") +
+  ggtitle("神戸市各区の人口")
+```
+
