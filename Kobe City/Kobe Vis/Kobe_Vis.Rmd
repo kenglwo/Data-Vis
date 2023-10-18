@@ -103,9 +103,9 @@ ggsave("./figures/population_by_wards.png", width=10, height=6, type="png")
 
 
 ```{r}
-install.packages("sf")
+# install.packages("sf")
+# install.packages("RColorBrewer")
 library(sf)
-install.packages("RColorBrewer")
 library(RColorBrewer)
 # display.brewer.all()
 
@@ -183,3 +183,31 @@ ggplot(map3) + geom_sf(aes(fill=population_density)) +
 
 ```
 
+
+
+
+```{r}
+d_city_ward_offices <- read_csv("./data/city_ward_offices.csv")
+
+ggplot(map2) +
+  geom_sf()  +
+  geom_point(
+    data=d_city_ward_offices,
+    aes(x=経度, y=緯度, color=分類),
+    stat="identity",
+    position="identity",
+    alpha=0.5
+  ) +
+  # ops(legend.position="top")
+  scale_color_discrete(breaks=c("市役所", "区役所", "支所")) +
+  ggtitle("神戸市内の市役所・区役所・支所の位置")
+
+
+```
+
+
+  
+  
+  
+  
+  
