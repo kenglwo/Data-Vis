@@ -224,7 +224,38 @@ ggplot(map2) +
 
 
   
+```{r}
+d_location_hoiku_1 <- read_csv("./data/location_hoiku_1.csv")
+
+ggplot(map2) +
+  geom_sf()  +
+  geom_point(
+    data=d_location_hoiku_1,
+    aes(x=経度, y=緯度, color=組織),
+    stat="identity",
+    position="identity",
+    alpha=0.5
+  ) +
+  # scale_color_discrete(breaks=c("市役所", "区役所", "支所")) +
+  ggtitle("保育施設1号認定の一覧")
+```
   
   
+  
+```{r}
+d_location_hoiku_2_3 <- read_csv("./data/location_hoiku_2_3.csv")
+
+ggplot(map2) +
+  geom_sf()  +
+  geom_point(
+    data=d_location_hoiku_2_3,
+    aes(x=経度, y=緯度, color=一時保育),
+    stat="identity",
+    position="identity",
+    alpha=0.5
+  ) +
+  # scale_color_discrete(breaks=c("市役所", "区役所", "支所")) +
+  ggtitle("保育施設1号認定の一覧")
+```
   
   
