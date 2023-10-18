@@ -205,6 +205,23 @@ ggplot(map2) +
 
 ```
 
+```{r}
+d_location_wifi <- read_csv("./data/location_free_wifi.csv")
+
+ggplot(map2) +
+  geom_sf()  +
+  geom_point(
+    data=d_location_wifi,
+    aes(x=経度, y=緯度),
+    stat="identity",
+    position="identity",
+    alpha=0.5
+  ) +
+  # ops(legend.position="top")
+  scale_color_discrete(breaks=c("市役所", "区役所", "支所")) +
+  ggtitle("Kobe Free Wi-Fiアクセスポイント一覧")
+```
+
 
   
   
