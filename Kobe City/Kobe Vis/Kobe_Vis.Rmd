@@ -14,8 +14,8 @@ knitr::opts_chunk$set(echo = TRUE)
 ```{r}
 # install.packages("tidyverse")
 # install.packages("knitr")
-library(dplyr)
 # install.packages("kokudosuuchi")
+library(dplyr)
 library(ggplot2)
 library(stringr)
 library(readxl)
@@ -62,7 +62,7 @@ d_daicho <- read_csv("./data/2023-juminkihondaicho.csv")
 
 
 ```{r}
-library(scales)
+# library(scales)
 
 d_daicho_1 <- d_daicho %>% 
   # filter(区 == '全市') %>%
@@ -116,7 +116,7 @@ library(RColorBrewer)
 map <- read_sf("./data/Shape Files/kobe_districts/all_districts/all_districts.shp")
 
 d_daicho_districts2 <- d_daicho_districts %>% rename(CITY_NAME=区)
-View(d_daicho_districts2)
+# View(d_daicho_districts2)
 
 map2 <- map %>% 
   mutate(CITY_NAME = str_sub(CITY_NAME, 4,-1)) %>%
@@ -244,18 +244,38 @@ ggplot(map2) +
   
 ```{r}
 d_location_hoiku_2_3 <- read_csv("./data/location_hoiku_2_3.csv")
+View(map2)
 
-ggplot(map2) +
-  geom_sf()  +
-  geom_point(
+map2 %>% 
+  # filter(CITY_NAME == "中央区") %>% 
+  ggplot() +
+    geom_sf()  +
+    geom_point(
     data=d_location_hoiku_2_3,
-    aes(x=経度, y=緯度, color=一時保育),
-    stat="identity",
-    position="identity",
-    alpha=0.5
-  ) +
-  # scale_color_discrete(breaks=c("市役所", "区役所", "支所")) +
-  ggtitle("保育施設1号認定の一覧")
+    # data=d_location_hoiku_2_3 %>% filter(所在区 == "中央"),
+      aes(x=経度, y=緯度, color=一時保育),
+      stat="identity",
+      position="identity",
+      alpha=0.5
+    ) +
+    # scale_color_discrete(breaks=c("市役所", "区役所", "支所")) +
+    ggtitle("保育施設1号認定の一覧")
 ```
+
+
+```{r}
+install.packages("shiny")
+
+library(shiny)
+runExample("01_hello")
+runApp("dashboard1")
+# install.packages("bslib")
+
+```
+
+
+
+
+
   
   
