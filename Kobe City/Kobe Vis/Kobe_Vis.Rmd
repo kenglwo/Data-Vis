@@ -274,6 +274,32 @@ runApp("dashboard1")
 ```
 
 
+```{r}
+
+# c("人口_日本人(計)", "人口_日本人(男)", "人口_日本人(女)", "人口_外国人(計)", "人口_外国人(男)", "人口_外国人(女)", "世帯数")
+
+d_daicho_population1 <- d_daicho %>% 
+  filter(支所等 == '本区' | 支所等 == '合計') %>%
+  filter(区 != '北区' & 区 != '須磨区' & 区 != '西区')
+
+
+d_daicho_population2 <- d_daicho %>% 
+  filter(支所等 == '本区' | 支所等 == '合計') %>%
+  filter(区 == '北区' | 区 == '須磨区' | 区 == '西区') %>% 
+  group_by(区, 対象年月) %>% filter(値 == max(値)) 
+
+d_daicho_population <- union(d_daicho_population1, d_daicho_population2) %>% 
+  select(対象年月, 区, 種別, 値)
+
+d_daicho_population2 <- d_daicho_population %>% rename(CITY_NAME=区)
+map3 <- map  %>% 
+  select(CITY_NAME, AREA) %>% 
+  mutate(CITY_NAME = str_sub(CITY_NAME, 4,-1)) %>%
+  full_join(d_daicho_population2, by="CITY_NAME") 
+  # select(CITY_NAME, AREA, 値) %>% rename(population=値)
+
+library(lubridate)
+```
 
 
 
