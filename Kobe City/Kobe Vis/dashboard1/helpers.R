@@ -140,7 +140,7 @@ d_daicho_population2 <- d_daicho %>%
   filter(区 != '全市') %>%
   filter(支所等 == '本区' | 支所等 == '合計') %>%
   filter(区 == '北区' | 区 == '須磨区' | 区 == '西区') %>% 
-  group_by(区, 対象年月) %>% filter(値 == max(値)) 
+  group_by(区, 対象年月, 種別) %>% filter(値 == max(値)) 
 
 d_daicho_population <- union(d_daicho_population1, d_daicho_population2) %>% 
   select(対象年月, 区, 種別, 値)
@@ -162,13 +162,16 @@ map3 <- map  %>%
   rename(population=値)
 
 
-plot_bar_population_year_month <- function(target_area, year, month){
+plot_bar_population_year_month <- function(target_area, year, month, checkbox_people, checkbox_gender){
+  people_attribute <-  get_people_attribute(checkbox_people, checkbox_gender)  
+  print(people_attribute)
+  
   target_month_str <- if_else(month < 10, str_glue("0{month}"), as.character(month))
   target_year_month_str <- as.double(str_glue("{year}{target_month_str}"))
   
   d_daicho_population2 %>%
-    filter(種別 == "人口(計)") %>% 
     filter(対象年月 == target_year_month_str) %>%
+    filter(種別 == people_attribute) %>% 
     filter(if(target_area == "全市") TRUE else CITY_NAME ==  target_area) %>%
     ggplot() +
     geom_bar(aes(x=reorder(CITY_NAME, -値), y=値), stat="identity", fill="steelblue") +
@@ -179,14 +182,17 @@ plot_bar_population_year_month <- function(target_area, year, month){
     scale_y_continuous(labels=comma)
 }
 
-map_population_by_year_month <- function(target_area, year=2023, month=1){
+
+map_population_by_year_month <- function(target_area, year=2023, month=1, checkbox_people, checkbox_gender){
+
+  people_attribute = get_people_attribute(checkbox_people, checkbox_gender)
   target_month_str <- if_else(month < 10, str_glue("0{month}"), as.character(month))
   target_year_month_str <- as.double(str_glue("{year}{target_month_str}"))
   
   map3 %>% 
     filter(if(target_area == "全市") TRUE else CITY_NAME ==  target_area) %>%
-    filter(種別 == "人口(計)") %>% 
     filter(対象年月 == target_year_month_str) %>%
+    filter(種別 == people_attribute) %>% 
     ggplot() +
       geom_sf(aes(fill=population)) +
       scale_fill_gradientn(colors=brewer.pal(11,"GnBu"), labels=comma) +
@@ -206,6 +212,30 @@ map_population_by_year_month <- function(target_area, year=2023, month=1){
       geom_text(aes(x = 135.175, y = 34.65), label = "区", color="black", family = "HiraKakuProN-W3", angle=0) +
       labs(fill = "単位：人") +
       ggtitle("神戸市各区の人口")
+}
+
+get_people_attribute <- function(checkbox_people, checkbox_gender) {
+  people_attribute = ""
+  
+  if (length(checkbox_people) == 0 || length(checkbox_gender) == 0) {
+    
+  } else if (length(checkbox_people) == 2 && length(checkbox_gender) == 2) {
+    people_attribute =  "人口(計)"
+  } else if (checkbox_people[1] == "japanese" && length(checkbox_gender) == 2) {
+    people_attribute = "人口_日本人(計)"
+  } else if  (checkbox_people[1] == "japanese" && checkbox_gender == "male") {
+    people_attribute = "人口_日本人(男)"
+  } else if  (checkbox_people[1] == "japanese" && checkbox_gender == "female") {
+    people_attribute = "人口_日本人(女)"
+  } else if  (checkbox_people[1] == "foreigners" && length(checkbox_gender) == 2) {
+    people_attribute = "人口_外国人(計)"
+  } else if  (checkbox_people[1] == "foreigners" && checkbox_gender == "male") {
+    people_attribute = "人口_外国人(男)"
+  } else if  (checkbox_people[1] == "foreigners" && checkbox_gender == "female") {
+    people_attribute = "人口_外国人(女)"
+  } 
+  
+  return(people_attribute)
 }
 
 

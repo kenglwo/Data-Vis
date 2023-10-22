@@ -15,14 +15,15 @@ knitr::opts_chunk$set(echo = TRUE)
 # install.packages("tidyverse")
 # install.packages("knitr")
 # install.packages("kokudosuuchi")
+# library(kokudosuuchi)
+# install.packages("rmapshaper")
+# library(rmapshaper)
 library(dplyr)
 library(ggplot2)
 library(stringr)
 library(readxl)
 library(readr)
-# library(kokudosuuchi)
-# install.packages("rmapshaper")
-# library(rmapshaper)
+
 ```
 
 
@@ -286,7 +287,7 @@ d_daicho_population1 <- d_daicho %>%
 d_daicho_population2 <- d_daicho %>% 
   filter(支所等 == '本区' | 支所等 == '合計') %>%
   filter(区 == '北区' | 区 == '須磨区' | 区 == '西区') %>% 
-  group_by(区, 対象年月) %>% filter(値 == max(値)) 
+  group_by(区, 対象年月, 種別) %>% filter(値 == max(値)) 
 
 d_daicho_population <- union(d_daicho_population1, d_daicho_population2) %>% 
   select(対象年月, 区, 種別, 値)

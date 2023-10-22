@@ -92,12 +92,12 @@ server <- function(input, output) {
   })
   
   output$plot_bar_population_year_month <- renderPlot({
-    plot_bar_population_year_month(input$target_areas, input$year, input$month)
+    plot_bar_population_year_month(input$target_areas, input$year, input$month, input$checkbox_people, input$checkbox_gender)
   })
   
   
   output$map_population_by_year_month <- renderPlot({
-    map_population_by_year_month(input$target_areas, input$year, input$month)
+    map_population_by_year_month(input$target_areas, input$year, input$month, input$checkbox_people, input$checkbox_gender)
   })
 }
 
